@@ -15,7 +15,7 @@ const int tag_computing = 2;
 const int tag_gathering = 3;
 
 float initial_temperature(float x) {
-    return 0.5;
+    return 0.5 + 0.2 * sin(20 * x);
 }
 
 void print_usage_and_die() {
@@ -117,11 +117,6 @@ int main(int argc, char *argv[]) {
     int my_points_begin = points_begin[my_rank];
     int my_points_end = points_end[my_rank];
 
-#ifndef DEBUG
-    fprintf(stderr, "Process %d: (%d, %d), %d\n", my_rank, points_begin[my_rank], 
-           points_end[my_rank], points_num[my_rank]);
-#endif
-
     MPI_Barrier(MPI_COMM_WORLD);
 
     // 3. Master process distributes the initial values among the processes
@@ -139,16 +134,9 @@ int main(int argc, char *argv[]) {
         for (int i = my_points_begin; i < my_points_end; i++) 
             my_ys[i] = ys[i];
 
-#ifndef DEBUG
-        fprintf(stderr, "Process %d received %d points\n", 0, my_points_num);
-#endif
     } else {
         MPI_Recv(my_ys, my_points_num, MPI_FLOAT, 0, tag_init, 
                  MPI_COMM_WORLD, NULL);
-
-#ifndef DEBUG
-        fprintf(stderr, "Process %d received %d points\n", my_rank, my_points_num);
-#endif
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -214,9 +202,6 @@ int main(int argc, char *argv[]) {
 
     // 5. Collect the partial results 
     if (my_rank == 0) {
-#ifdef DEBUG
-        fprintf(stderr, "Started gathering results...\n");
-#endif
         for (int i = 0; i <= my_points_end - 1; i++) {
             ys[i] = my_ys[i];
         }
@@ -246,8 +231,6 @@ int main(int argc, char *argv[]) {
 
         free(ys);
     }
-
-    fprintf(stderr, "Process: %d\n", my_rank);
 
     free(points_num);
     free(points_begin);
