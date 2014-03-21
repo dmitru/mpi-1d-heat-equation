@@ -137,8 +137,6 @@ int main(int argc, char *argv[]) {
                  MPI_COMM_WORLD, NULL);
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
     // 4. Processes start computing the solution
     int iterations_num = time_to_integrate / time_step;
     float x_step = (interval_end - interval_begin) / (points - 1);
