@@ -117,8 +117,6 @@ int main(int argc, char *argv[]) {
     int my_points_begin = points_begin[my_rank];
     int my_points_end = points_end[my_rank];
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
     // 3. Master process distributes the initial values among the processes
     float *buf1 = (float *) calloc(my_points_num, sizeof(float));
     float *buf2 = (float *) calloc(my_points_num, sizeof(float));
