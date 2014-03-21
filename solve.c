@@ -83,21 +83,21 @@ int main(int argc, char *argv[]) {
     int *points_end = (int *) calloc(processes, sizeof(int));
     int *points_num = (int *) calloc(processes, sizeof(int));
     
-    for (int rank = 0; rank < processes; rank++) {
-        int cur_points_num = points / processes;
-        int points_left = points % processes;
-        if (rank < points_left) 
-            cur_points_num += 1;
+    int basic_points_num = points / processes;
+    int points_left = points % processes;
 
+    for (int rank = 0; rank < processes; rank++) {
         int cur_points_begin, cur_points_end;
         if (rank < points_left) {
-            cur_points_begin = rank * cur_points_num;
-            cur_points_end = cur_points_begin + cur_points_num - 1;
+            cur_points_begin = rank * basic_points_num;
+            cur_points_end = cur_points_begin + basic_points_num - 1;
         } else {
-            cur_points_begin = (cur_points_num + 1) * points_left 
-                + (rank - points_left) * cur_points_num;
-            cur_points_end = cur_points_begin + cur_points_num - 1;
+            cur_points_begin = (basic_points_num + 1) * points_left 
+                + (rank - points_left) * basic_points_num;
+            cur_points_end = cur_points_begin + basic_points_num - 1;
         }
+
+        int cur_points_num = basic_points_num;
 
         if (rank > 0) {
             cur_points_begin -= 1;
